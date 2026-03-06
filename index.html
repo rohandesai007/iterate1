@@ -11,6 +11,11 @@
     <h1>Manifestation Journey</h1>
     <p class="subtitle">108 Days &nbsp;·&nbsp; 1,259,712 Repetitions</p>
     <blockquote class="mantra-text">8277247 Rohan will get EB1A GC approved without RFE in March 2026</blockquote>
+    <details class="binary-details" id="binary-details">
+      <summary>Binary representation (encoding only — not encryption)</summary>
+      <div id="binary-view" class="binary-view"></div>
+      <p class="binary-note">Binary encoding converts each character to its 8-bit value. It is trivially reversible and provides zero security — anyone can decode it instantly.</p>
+    </details>
   </header>
 
   <div id="today-banner" class="today-banner" style="display:none"></div>
@@ -53,6 +58,20 @@
         buildGrid(today);
       })
       .catch(() => buildGrid(0));
+
+    // Populate binary view on demand (only when the <details> is opened)
+    var MANTRA_INDEX = '8277247 Rohan will get EB1A GC approved without RFE in March 2026';
+    function toBinary(str) {
+      return str.split('').map(function(c) {
+        return c.charCodeAt(0).toString(2).padStart(8, '0');
+      }).join(' ');
+    }
+    document.getElementById('binary-details').addEventListener('toggle', function() {
+      if (this.open) {
+        var el = document.getElementById('binary-view');
+        if (!el.textContent) el.textContent = toBinary(MANTRA_INDEX);
+      }
+    });
   </script>
 </body>
 </html>

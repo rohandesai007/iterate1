@@ -124,3 +124,46 @@ main h2 { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 1rem; }
   max-height: 70vh;
   word-break: break-all;
 }
+
+/* ── Binary view ── */
+.binary-details {
+  margin-top: 0.75rem;
+}
+.binary-details summary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  user-select: none;
+}
+.binary-details summary::before {
+  content: '▶';
+  font-size: 0.65rem;
+  transition: transform 0.15s;
+}
+.binary-details[open] summary::before {
+  transform: rotate(90deg);
+}
+.binary-details summary:hover { color: var(--text); }
+.binary-view {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  word-break: break-all;
+  white-space: normal;
+}
+.binary-note {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}

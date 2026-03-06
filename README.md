@@ -7,6 +7,11 @@ A 108-day manifestation website displaying the mantra:
 Each day page renders the mantra **1,259,712 times** (108 × 108 × 108) using
 progressive JavaScript chunking so the browser stays responsive.
 
+A collapsible **Binary representation** panel on each page shows the mantra
+encoded as 8-bit binary values (e.g. `00111000 00110010 …`).  
+This is purely decorative — binary encoding is **not** encryption; it is
+trivially reversible and provides zero security.
+
 ## Structure
 
 ```
