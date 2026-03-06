@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manifestation – 108 Days</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Manifestation Journey</h1>
+    <p class="subtitle">108 Days &nbsp;·&nbsp; 1,259,712 Repetitions</p>
+    <blockquote class="mantra-text">8277247 Rohan will get EB1A GC approved without RFE in March 2026</blockquote>
+  </header>
+
+  <div id="today-banner" class="today-banner" style="display:none"></div>
+
+  <div id="days-grid" class="days-grid"></div>
+
+  <script>
+    const START_MS = Date.UTC(2026, 2, 6); // 2026-03-06 UTC
+    const days = Array.from({length: 108}, (_, i) => {
+      const d = new Date(START_MS + i * 86400000);
+      return d.toISOString().slice(0, 10);
+    });
+
+    function pad(n) { return String(n).padStart(3, '0'); }
+
+    function buildGrid(currentDay) {
+      const grid = document.getElementById('days-grid');
+      grid.innerHTML = '';
+      days.forEach((date, i) => {
+        const dayNum = i + 1;
+        const a = document.createElement('a');
+        a.href = 'days/day-' + pad(dayNum) + '.html';
+        a.className = 'day-link' + (dayNum === currentDay ? ' today' : '');
+        a.innerHTML =
+          '<span class="day-num">Day ' + dayNum + '</span>' +
+          '<span class="day-date">' + date + '</span>';
+        grid.appendChild(a);
+      });
+    }
+
+    fetch('daily.json')
+      .then(r => r.json())
+      .then(data => {
+        const today = data.currentDay;
+        const banner = document.getElementById('today-banner');
+        banner.style.display = '';
+        banner.innerHTML =
+          '<a class="today-link" href="days/day-' + pad(today) + '.html">' +
+          'Today is Day ' + today + ' (' + data.date + ') →</a>';
+        buildGrid(today);
+      })
+      .catch(() => buildGrid(0));
+  </script>
+</body>
+</html>

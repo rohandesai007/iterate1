@@ -1,0 +1,96 @@
+name: Daily Manifestation PR
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # midnight UTC every day
+  workflow_dispatch:
+
+jobs:
+  daily-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Compute current day
+        id: compute
+        run: |
+          START="2026-03-06"
+          TODAY=$(date -u +%Y-%m-%d)
+          START_TS=$(date -u -d "$START" +%s)
+          TODAY_TS=$(date -u -d "$TODAY" +%s)
+          DIFF=$(( (TODAY_TS - START_TS) / 86400 + 1 ))
+          [ "$DIFF" -lt 1 ]   && DIFF=1
+          [ "$DIFF" -gt 108 ] && DIFF=108
+          DAY_PAD=$(printf '%03d' "$DIFF")
+          echo "day=$DIFF"       >> "$GITHUB_OUTPUT"
+          echo "date=$TODAY"     >> "$GITHUB_OUTPUT"
+          echo "day_pad=$DAY_PAD" >> "$GITHUB_OUTPUT"
+
+      - name: Update daily.json
+        run: |
+          printf '{"currentDay": %s, "date": "%s"}\n' \
+            "${{ steps.compute.outputs.day }}" \
+            "${{ steps.compute.outputs.date }}" > daily.json
+
+      - name: Commit and push branch
+        id: push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add daily.json
+
+          # Bail out early (before branch creation) if nothing changed
+          if git diff --cached --quiet; then
+            echo "daily.json unchanged – skipping PR"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+          BRANCH="daily/day-${{ steps.compute.outputs.day_pad }}"
+          # Remove stale remote branch if it exists
+          git push origin --delete "$BRANCH" 2>/dev/null || true
+          git checkout -b "$BRANCH"
+          git commit -m "Daily update: Day ${{ steps.compute.outputs.day }} (${{ steps.compute.outputs.date }})"
+          git push origin "$BRANCH"
+
+      - name: Open PR into main
+        if: steps.push.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="daily/day-${{ steps.compute.outputs.day_pad }}"
+          DAY="${{ steps.compute.outputs.day }}"
+          DATE="${{ steps.compute.outputs.date }}"
+
+          # Close any existing open PR for this branch
+          EXISTING=$(gh pr list --base main --head "$BRANCH" --state open --json number --jq '.[0].number')
+          [ -n "$EXISTING" ] && gh pr close "$EXISTING" --comment "Superseded by new run" || true
+
+          gh pr create \
+            --title "Daily update: Day ${DAY} (${DATE})" \
+            --body "$(cat <<BODY
+          ### Automated daily update
+
+          | Field | Value |
+          |-------|-------|
+          | Day   | ${DAY} of 108 |
+          | Date  | ${DATE} |
+
+          This PR updates \`daily.json\` so the index page highlights today's day page.
+
+          > GitHub will notify repository watchers automatically.
+          BODY
+          )" \
+            --base main \
+            --head "$BRANCH"
