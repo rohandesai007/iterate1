@@ -36,7 +36,6 @@
     var TOTAL  = 1259712;
     var CHUNK  = 50000;
     var count  = 0;
-    var chunks = [];
     var pre      = document.getElementById('mantra-output');
     var progress = document.getElementById('progress');
 
@@ -45,7 +44,7 @@
       var size = end - count;
       var arr  = new Array(size);
       for (var i = 0; i < size; i++) arr[i] = MANTRA;
-      chunks.push(arr.join('\n'));
+      pre.appendChild(document.createTextNode(arr.join('\n') + '\n'));
       count = end;
       var pct = Math.round(count / TOTAL * 100);
       progress.textContent =
@@ -54,7 +53,6 @@
       if (count < TOTAL) {
         setTimeout(buildChunk, 0);
       } else {
-        pre.textContent = chunks.join('\n');
         progress.textContent =
           '✓ All ' + TOTAL.toLocaleString() + ' lines rendered';
       }
