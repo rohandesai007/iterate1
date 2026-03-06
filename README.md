@@ -2,7 +2,7 @@
 
 A 108-day manifestation website displaying the mantra:
 
-> **8277247 **
+> **11111100100110011111111 **
 
 Each day page renders the mantra **1,259,712 times** (108 × 108 × 108) using
 progressive JavaScript chunking so the browser stays responsive.
