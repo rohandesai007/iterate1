@@ -20,6 +20,17 @@
 
   <div id="today-banner" class="today-banner" style="display:none"></div>
 
+  <div id="progress-bar-wrap" class="progress-bar-wrap" style="display:none">
+    <div class="progress-bar-track">
+      <div id="progress-bar-fill" class="progress-bar-fill" style="width:0%"></div>
+    </div>
+    <div class="stats-row">
+      <span id="stat-done" class="stat"></span>
+      <span id="stat-today" class="stat stat-today"></span>
+      <span id="stat-rem" class="stat"></span>
+    </div>
+  </div>
+
   <div id="days-grid" class="days-grid"></div>
 
   <script>
@@ -38,12 +49,18 @@
         const dayNum = i + 1;
         const a = document.createElement('a');
         a.href = 'days/day-' + pad(dayNum) + '.html';
-        a.className = 'day-link' + (dayNum === currentDay ? ' today' : '');
+        let cls = 'day-link';
+        if (currentDay > 0 && dayNum < currentDay) cls += ' completed';
+        else if (dayNum === currentDay) cls += ' today';
+        a.className = cls;
         a.innerHTML =
           '<span class="day-num">Day ' + dayNum + '</span>' +
           '<span class="day-date">' + date + '</span>';
         grid.appendChild(a);
       });
+      // Scroll today into view after render
+      const todayEl = grid.querySelector('.today');
+      if (todayEl) setTimeout(function() { todayEl.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 150);
     }
 
     fetch('daily.json')
@@ -56,6 +73,18 @@
           '<a class="today-link" href="days/day-' + pad(today) + '.html">' +
           'Today is Day ' + today + ' (' + data.date + ') →</a>';
         buildGrid(today);
+        // Journey progress bar and stats
+        const done = today - 1;
+        const rem  = 108 - today;
+        const pct  = Math.round(today / 108 * 100);
+        document.getElementById('progress-bar-fill').style.width = pct + '%';
+        document.getElementById('stat-done').textContent =
+          done + (done === 1 ? ' day' : ' days') + ' completed';
+        document.getElementById('stat-today').textContent =
+          'Day ' + today + ' of 108 (' + pct + '%)';
+        document.getElementById('stat-rem').textContent =
+          rem + (rem === 1 ? ' day' : ' days') + ' remaining';
+        document.getElementById('progress-bar-wrap').style.display = '';
       })
       .catch(() => buildGrid(0));
 
