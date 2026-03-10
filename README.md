@@ -2,7 +2,7 @@
 
 **🌐 Live site: [https://rohandesai007.github.io/iterate1/](https://rohandesai007.github.io/iterate1/)**
 
-A 108-day manifestation website displaying the mantra:
+A 110-day manifestation website displaying the mantra:
 
 > **00111000 00110010 00110111 00110111 00110010 00110100 00110111 00100000 01010010 01101111 01101000 01100001 01101110 00100000 01110111 01101001 01101100 01101100 00100000 01100111 01100101 01110100 00100000 01000101 01000010 00110001 01000001 00100000 01000111 01000011 00100000 01100001 01110000 01110000 01110010 01101111 01110110 01100101 01100100 00100000 01110111 01101001 01110100 01101000 01101111 01110101 01110100 00100000 01010010 01000110 01000101 00100000 01101001 01101110 00100000 01001101 01100001 01110010 01100011 01101000 00100000 00110010 00110000 00110010 00110110**
 
@@ -17,12 +17,12 @@ trivially reversible and provides zero security.
 ## Structure
 
 ```
-index.html              Home page – links to all 108 day pages
+index.html              Home page – links to all 110 day pages
 styles.css              Shared stylesheet
 daily.json              Tracks the current day (updated by workflow)
 days/day-001.html       Day 1  – 2026-03-06
 …
-days/day-108.html       Day 108 – 2026-06-21
+days/day-110.html       Day 110 – 2026-06-23
 .github/workflows/
   daily-pr.yml          Daily automation workflow
 ```
@@ -53,7 +53,7 @@ days/day-001.html
 
 The workflow `.github/workflows/daily-pr.yml` runs every day at **00:00 UTC**:
 
-1. Computes the current day number (1–108) relative to 2026-03-06.
+1. Computes the current day number (1–110) relative to 2026-03-06.
 2. Updates `daily.json` with today's day and date.
 3. Creates a branch `daily/day-XXX`, commits, pushes, and opens a PR into `main`.
 4. GitHub sends notifications to all repository watchers automatically.
